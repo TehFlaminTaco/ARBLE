@@ -1,3 +1,3 @@
 ([=[ARBLE:
     A Rather Brief Lua Extension
-    usage: lua %s <target.lua>]=]):format(arg[0])
+    usage: lua %s <target.lua> [arguments, ...]]=]):format(arg[0])
