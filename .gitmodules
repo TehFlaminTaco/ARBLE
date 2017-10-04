@@ -1,6 +1,3 @@
-[submodule "equa.lua"]
-	path = equa.lua
-	url = http://github.com/tehflamintaco/equa.lua
 [submodule "equa"]
 	path = equa
 	url = http://github.com/tehflamintaco/equa.lua

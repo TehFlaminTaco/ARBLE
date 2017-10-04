@@ -2,7 +2,7 @@
 local prepend = (arg[0]:match(".*[\\/]")or"")
 local prependdot = prepend:gsub("[\\/]",".")
 
-require(prependdot.."equa")
+require(prependdot.."equa.equa")
 require(prependdot.."meta")
 require(prependdot.."globals")
 local file = table.remove(arg,1) or prepend.."default.lua"
