@@ -1,10 +1,9 @@
 #!/usr/bin/env lua
 local prepend = (arg[0]:match(".*[\\/]")or"")
-local prependdot = prepend:gsub("[\\/]","."):gsub("^%.*","")
-
-require(prependdot.."equa.equa")
-require(prependdot.."meta")
-require(prependdot.."globals")
+package.path = package.path .. ";" .. prepend .. "?.lua";
+require("equa.equa")
+require("meta")
+require("globals")
 local file = table.remove(arg,1) or prepend.."default.lua"
 
 for i=1, #arg do
