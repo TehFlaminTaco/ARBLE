@@ -1,10 +1,18 @@
+#!/usr/bin/env lua
 local prepend = (arg[0]:match(".*[\\/]")or"")
 local prependdot = prepend:gsub("[\\/]",".")
 
 require(prependdot.."equa")
 require(prependdot.."meta")
+require(prependdot.."globals")
 local file = table.remove(arg,1) or prepend.."default.lua"
 
+for i=1, #arg do
+	local v = arg[i]
+	if type(v)=="string" then
+		arg[i] = load('return '..v)()
+	end
+end
 
 local f = io.open(file, "r")
 if not f then

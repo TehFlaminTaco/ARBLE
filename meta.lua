@@ -42,3 +42,20 @@ func.__concat = function(a, b)
 		end
 	end
 end
+
+function func.__pow(a,b)
+	if(type(a)~="function")then
+		a,b = b,a
+	end
+	if(isEq(b))then
+		return getmetatable(b).__pow(a,b)
+	end
+	return function(...)
+		local ret = {...}
+		print(b)
+		for i=1, b do
+			ret = {a(table.unpack(ret))}
+		end
+		return table.unpack(ret)
+	end
+end
