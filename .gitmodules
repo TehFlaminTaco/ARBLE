@@ -1,0 +1,3 @@
+[submodule "equa"]
+	path = equa
+	url = https://github.com/tehflamintaco/equa.lua
