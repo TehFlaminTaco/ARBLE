@@ -1,6 +1,6 @@
 #!/usr/bin/env lua
 local prepend = (arg[0]:match(".*[\\/]")or"")
-local prependdot = prepend:gsub("[\\/]",".")
+local prependdot = prepend:gsub("[\\/]","."):gsub("^%.*","")
 
 require(prependdot.."equa.equa")
 require(prependdot.."meta")
