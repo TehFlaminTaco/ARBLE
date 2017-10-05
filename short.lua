@@ -3,7 +3,9 @@ local prepend = (arg[0]:match(".*[\\/]")or"")
 package.path = package.path .. ";" .. prepend .. "?.lua";
 require("equa.equa")
 require("meta")
+require("list")
 require("globals")
+
 local file = table.remove(arg,1) or prepend.."default.lua"
 
 for i=1, #arg do
@@ -43,6 +45,9 @@ local func = table.remove(dat,1)
 local val = func()
 
 if(type(val)=="function"or (getmetatable(val) and getmetatable(val).__call))then
+	if(isEq(val))then
+		val = #val
+	end
 	local o = val(table.unpack(arg))
 	if o ~= nil then
 		print(tostring(o))
