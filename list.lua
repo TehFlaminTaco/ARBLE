@@ -16,7 +16,26 @@ _list.__tostring = function(l)
     return '[' .. l.join(", ") .. ']'
 end
 
-range = wrap(function(a, b, funky, ...)
+function funkItUp(func, argList)
+    if(type(argList)~="table")then
+        argList = {argList}
+    end
+    return function(...)
+        local newArg = {}
+        for k,v in ipairs{...} do
+            for k2,v2 in ipairs(argList) do
+                if(v2 == k)then
+                    v = makeFunky(v)
+                    break
+                end
+            end
+            newArg[k] = v
+        end
+        return func(table.unpack(newArg))
+    end
+end
+
+range = funkItUp(wrap(function(a, b, funky, ...)
     if funky then
         funky = makeFunky(funky)
     end
@@ -25,9 +44,9 @@ range = wrap(function(a, b, funky, ...)
         l[#l+1] = funky and funky(i,...) or i
     end
     return l
-end,"range")
+end,"range"),3)
 
-list.forEach = wrap(function(list, funk,...)
+list.forEach = funkItUp(wrap(function(list, funk,...)
     funk = makeFunky(funk)
     for k,v in ipairs(list) do
         local v = funk(v,k,list,...)
@@ -35,18 +54,18 @@ list.forEach = wrap(function(list, funk,...)
             return v
         end
     end
-end,"forEach")
+end,"forEach"),2)
 
-list.map = wrap(function(inplist, funk,...)
+list.map = funkItUp(wrap(function(inplist, funk,...)
     funk = makeFunky(funk)
     local newList = list()
     for k,v in ipairs(inplist) do
         newList[k] = funk(v,k,inplist,newList,...)
     end
     return newList
-end,"map")
+end,"map"),2)
 
-list.reduce = wrap(function(a,b,...)
+list.reduce = funkItUp(wrap(function(a,b,...)
     local val
     b = makeFunky(b)
     for k,v in ipairs(a) do
@@ -57,9 +76,9 @@ list.reduce = wrap(function(a,b,...)
         end
     end
     return val
-end,"reduce")
+end,"reduce"),2)
 
-list.cumulate = wrap(function(a,b,...)
+list.cumulate = funkItUp(wrap(function(a,b,...)
     local newList = list()
     local val
     b = makeFunky(b)
@@ -72,9 +91,9 @@ list.cumulate = wrap(function(a,b,...)
         newList[#newList+1] = val
     end
     return newList
-end,"cumulate")
+end,"cumulate"),2)
 
-list.fold = wrap(function(a,b,...)
+list.fold = funkItUp(wrap(function(a,b,...)
     local newList = list()
     local val
     b = makeFunky(b)
@@ -87,10 +106,10 @@ list.fold = wrap(function(a,b,...)
         end
     end
     return newList
-end,"fold")
+end,"fold"),2)
 
-list.sum = wrap(#list.reduce(a,#(a+b)), "sum")
-list.product = wrap(#list.reduce(a,#(a*b)), "product")
+list.sum = wrap(#list.reduce(a,a+b), "sum")
+list.product = wrap(#list.reduce(a,a*b), "product")
 
 list.c_cat = wrap(function(a,b)
     if(getmetatable(a)~=_list)then
@@ -109,7 +128,11 @@ list.c_cat = wrap(function(a,b)
     return l
 end,"c_cat")
 
-list.where = wrap(function(l,f,...)
+_list.__concat = function(a,b)
+    return list.c_cat(a,b)
+end
+
+list.where = funkItUp(wrap(function(l,f,...)
     local nlist = list()
     f = makeFunky(f)
     for k,v in ipairs(l) do
@@ -118,35 +141,39 @@ list.where = wrap(function(l,f,...)
         end
     end
     return nlist
-end,"where")
+end,"where"),2)
 
-list.split = wrap(function(l,n,f,...)
+list.split = funkItUp(wrap(function(l,n,f,...)
     local nlist = list()
     if f then
         f = makeFunky(f)
     end
+    if(type(l)=='string')then
+        return split(explode(l),n,f,...).map(join(a))
+    end
     for i=1, #l, n do
         local _nl = list()
         for c=i, math.min(#l,i+n-1) do
-            _nl[#_nl+1] = f and f(l[c],...) or l[c]
+            _nl[#_nl+1] = l[c]
         end
-        nlist[#nlist+1] = _nl
+        nlist[#nlist+1] = f and f(_nl) or _nl
     end
     return nlist
-end,"split")
+end,"split"),3)
 
-string.explode = function(str,match,func,...)
+string.explode = funkItUp(wrap(function(str,match,func,...)
     if func then
         func = makeFunky(func)
     end
+    match = match or "."
     local l = list()
     for s in str:gmatch(match) do
         l[#l+1] = func and func(s,...) or s
     end
     return l
-end
+end,"explode"),3)
 
-list.join = function(l,str)
+list.join = wrap(function(l,str)
     str = tostring(str or "")
     local c = ""
     local s = ""
@@ -155,7 +182,40 @@ list.join = function(l,str)
         c = str
     end
     return s
-end
+end,"join")
+
+list.contains = wrap(function(l,v)
+    for k,v2 in ipairs(l) do
+        if v2 == v then
+            return true
+        end
+    end
+    return false
+end,"contains")
+
+list.unique = wrap(function(l)
+    local nList = list()
+    for k,v in ipairs(l) do
+        if(not list.contains(nList,v))then
+            nList[#nList+1] = v
+        end
+    end
+    return nList
+end,"unique")
+
+list.compare = wrap(function(a,b)
+    if(#a ~= #b)then
+        return false
+    end
+    for k,v in ipairs(a) do
+        if b[k] ~= v then
+            return false
+        end
+    end
+    return true
+end,"compare")
+
+_list.__eq = list.compare
 
 local __g = getmetatable(_G)
 local i = __g.__index

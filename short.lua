@@ -42,7 +42,7 @@ end
 
 local func = table.remove(dat,1)
 
-local val = func()
+local val = func(...)
 
 if(type(val)=="function"or (getmetatable(val) and getmetatable(val).__call))then
 	if(isEq(val))then
