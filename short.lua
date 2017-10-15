@@ -4,6 +4,7 @@ package.path = package.path .. ";" .. prepend .. "?.lua";
 require("equa.equa")
 require("meta")
 require("list")
+require("base")
 require("globals")
 
 local file = table.remove(arg,1) or prepend.."default.lua"
