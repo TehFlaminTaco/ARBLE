@@ -32,3 +32,15 @@ fixed = funkItUp(wrap(function(f,...)
         old = new
     end
 end,"fixed"),1)
+
+function string.reverse(ent,...)
+    if(type(ent)=="table")then
+        local l = list()
+        for i=#ent, 1, -1 do
+            l[#l+1] = ent[i]
+        end
+        return l
+    else
+        return string.reverse(ent,...)
+    end
+end

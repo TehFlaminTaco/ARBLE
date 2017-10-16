@@ -217,6 +217,30 @@ end,"compare")
 
 _list.__eq = list.compare
 
+function _list.__bnot(l)
+    local newList = list()
+    local size = reduce(map(l,len),max)
+    for i=1, size do
+        newList[i] = list()
+    end
+    for i=1, #l do
+        local _l = l[i]
+        for c=1, size do
+            if(_l[c])then
+                newList[c][i] = _l[c]
+            else
+                newList[c][i] = nil
+            end
+        end
+    end
+    return newList
+end
+
+_list.__unm = function(l) return string.reverse(l) end
+
+_list.__band = list.where
+_list.__bor = list.map
+
 local __g = getmetatable(_G)
 local i = __g.__index
 __g.__index = function(a,k)return list[k] or i(a,k)end
