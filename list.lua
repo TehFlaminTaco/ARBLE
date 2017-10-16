@@ -240,6 +240,8 @@ _list.__unm = function(l) return string.reverse(l) end
 
 _list.__band = list.where
 _list.__bor = list.map
+_list.__div = list.reduce
+_list.__intdiv = list.fold
 
 local __g = getmetatable(_G)
 local i = __g.__index

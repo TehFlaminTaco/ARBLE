@@ -1,5 +1,5 @@
 local _func = {}
-debug.setmetatable(function()end,func)
+debug.setmetatable(function()end,_func)
 
 local _string = getmetatable("")
 
@@ -63,10 +63,12 @@ function _func.__pow(a,b)
 end
 
 function _func.__band(f,a)
-	if(isEq(a))then
-		return setmetatable({args = {f, a}, pre = 5, action = "call", format = function(...) return table.concat({...},"&") end, tex =  "%s\\left({%s}\\right)", func = function(f,a)return f&a end},_eq)
-	else
-		return f(a)
+	if(type(f)=="function")then
+		if(isEq(a))then
+			return setmetatable({args = {f, a}, pre = 5, action = "call", format = function(...) return table.concat({...},"&") end, tex =  "%s\\left({%s}\\right)", func = function(f,a)return f&a end},_eq)
+		else
+			return f(a)
+		end
 	end
 end
 
